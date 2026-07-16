@@ -227,6 +227,14 @@ export default function Login() {
     const [success, setSuccess] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
+    const [showCodeForm, setShowCodeForm] = useState(false);
+    const [token, setToken] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [codeError, setCodeError] = useState<string | null>(null);
+    const [codeSuccess, setCodeSuccess] = useState<string | null>(null);
+    const [codeSubmitting, setCodeSubmitting] = useState(false);
+
     const handleSubmit = async (e: FormEvent) => {
       e.preventDefault();
       setError(null);
@@ -247,24 +255,86 @@ export default function Login() {
       }
     };
 
+    const handleCodeSubmit = async (e: FormEvent) => {
+      e.preventDefault();
+      setCodeError(null);
+      setCodeSubmitting(true);
+      try {
+        const res = await fetch(`${API_BASE}/user/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, newPassword }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || data.error || `Reset failed (${res.status})`);
+        setCodeSuccess('Password reset! You can now log in.');
+        setTimeout(() => onSwitch('login'), 2500);
+      } catch (err) {
+        setCodeError(err instanceof Error ? err.message : 'Reset failed');
+      } finally {
+        setCodeSubmitting(false);
+      }
+    };
+
     return (
-      <form onSubmit={handleSubmit} className="p-6 space-y-4">
-        <p className="text-[13px] text-[#8B8779] dark:text-[#8B887E] leading-relaxed -mt-1">
-          Enter your email and we'll send you a link to reset your password.
-        </p>
-        <Field icon={<Mail className="h-[18px] w-[18px]" />} label="Email">
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={submitting} placeholder="you@example.com" className={inputClass('pr-3')} />
-        </Field>
+      <div className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <p className="text-[13px] text-[#8B8779] dark:text-[#8B887E] leading-relaxed -mt-1">
+            Enter your email and we'll send you a link to reset your password.
+          </p>
+          <Field icon={<Mail className="h-[18px] w-[18px]" />} label="Email">
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={submitting} placeholder="you@example.com" className={inputClass('pr-3')} />
+          </Field>
 
-        {error && <ErrorBox message={error} />}
-        {success && <SuccessBox message={success} />}
+          {error && <ErrorBox message={error} />}
+          {success && <SuccessBox message={success} />}
 
-        <button type="submit" disabled={submitting} className={btnClass()}>
-          {submitting ? <><Loader2 className="h-[18px] w-[18px] animate-spin" /> Sending...</> : <>Send reset link <ChevronRight className="h-4 w-4" /></>}
-        </button>
+          <div className="flex items-center gap-2">
+            <button type="submit" disabled={submitting} className={btnClass()}>
+              {submitting ? <><Loader2 className="h-[18px] w-[18px] animate-spin" /> Sending...</> : <>Send reset link <ChevronRight className="h-4 w-4" /></>}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowCodeForm((v) => !v)}
+              className="flex-shrink-0 px-3 py-2.5 bg-[#F0EEE6] dark:bg-[#33322E] hover:bg-[#E5E3DD] dark:hover:bg-[#3D3D3A] text-[#3D3929] dark:text-[#E8E6DC] text-[12px] font-medium rounded-lg transition-colors whitespace-nowrap"
+            >
+              I have a code
+            </button>
+          </div>
+        </form>
+
+        {showCodeForm && (
+          <form onSubmit={handleCodeSubmit} className="space-y-4 pt-4 border-t border-[#E5E3DD] dark:border-[#3D3D3A]">
+            <Field icon={<KeyRound className="h-[18px] w-[18px]" />} label="Reset Code">
+              <input
+                type="text"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                required
+                disabled={codeSubmitting}
+                placeholder="paste your reset code"
+                className={inputClass('pr-3') + ' font-mono text-[13px]'}
+              />
+            </Field>
+
+            <Field icon={<Lock className="h-[18px] w-[18px]" />} label="New Password">
+              <input type={showPassword ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required disabled={codeSubmitting} placeholder="••••••••" className={inputClass('pr-10')} />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#B4B0A6] dark:text-[#6B6A65] hover:text-[#3D3929] dark:hover:text-[#E8E6DC] transition-colors">
+                {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
+              </button>
+            </Field>
+
+            {codeError && <ErrorBox message={codeError} />}
+            {codeSuccess && <SuccessBox message={codeSuccess} />}
+
+            <button type="submit" disabled={codeSubmitting} className={btnClass()}>
+              {codeSubmitting ? <><Loader2 className="h-[18px] w-[18px] animate-spin" /> Resetting...</> : <>OK <ChevronRight className="h-4 w-4" /></>}
+            </button>
+          </form>
+        )}
 
         <BackLink onSwitch={onSwitch} />
-      </form>
+      </div>
     );
   }
 
