@@ -9,7 +9,9 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { ThemeProvider, useTheme, ThemeMode } from './auth/ThemeContext';
-import { LayoutDashboard, FileText, List, Video, FolderOpen, ChevronDown, LogOut, User, Settings as SettingsIcon, Globe as Globe2, Sun, Moon, Monitor, Activity, Zap, Mail, MessageSquare, Check, Copy } from 'lucide-react';
+import { LayoutDashboard, FileText, List, Video, FolderOpen, ChevronDown, LogOut, User, Settings as SettingsIcon, Globe as Globe2, Sun, Moon, Monitor, Zap, Mail, MessageSquare, Check, Copy } from 'lucide-react';
+
+const LOGO_URL = 'https://idealfrank.sirv.com/rev_by_famx_gradient.png';
 
 interface Project {
   id: string;
@@ -252,11 +254,9 @@ function DashboardApp() {
           {/* Brand */}
           <div className="px-5 py-5 border-b border-gray-200 dark:border-gray-800">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-sm">
-                <Activity className="h-5 w-5 text-white" />
-              </div>
+              <img src={LOGO_URL} alt="Famx REV" className="h-9 w-auto" />
               <div>
-                <h1 className="text-base font-bold text-gray-900 dark:text-white leading-tight">Pulse Analytics</h1>
+                <h1 className="text-base font-bold text-gray-900 dark:text-white leading-tight">Famx REV</h1>
                 <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-tight">Real-time insights</p>
               </div>
             </div>
