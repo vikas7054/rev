@@ -4,6 +4,7 @@ import { Clock, Users, MousePointer, Globe, MapPin, TrendingUp } from 'lucide-re
 import { useProject } from '../App';
 import { useTheme } from '../auth/ThemeContext';
 import Pages from './Pages';
+import Referrers from './Referer';
 
 interface Event {
   timestamp: string;
@@ -221,6 +222,9 @@ function Analytics() {
               </ResponsiveContainer>
             )}
           </div>
+
+          {/* Traffic Sources / Referrers */}
+          <Referrers />
 
           {/* Event types + Recent events */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
