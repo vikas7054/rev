@@ -5,6 +5,7 @@ import { useProject } from '../App';
 import { useTheme } from '../auth/ThemeContext';
 import Pages from './Pages';
 import Referrers from './Referer';
+import AdvancedAnalytics from './AdvancedAnalytics';
 
 interface Event {
   timestamp: string;
@@ -12,6 +13,10 @@ interface Event {
   visitorId: string;
   url: string;
   ip?: string;
+  userAgent?: string;
+  language?: string;
+  screenResolution?: string;
+  referrer?: string;
 }
 
 type Range = 'M' | 'H' | 'W' | 'MO' | 'Y';
@@ -277,6 +282,10 @@ function Analytics() {
           </div>
         </>
       )}
+
+      <div className="mt-8">
+        <AdvancedAnalytics events={events} />
+      </div>
 
       <div className="mt-8">
         <Pages />
